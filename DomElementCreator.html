@@ -1,0 +1,230 @@
+<html>
+
+<head>
+    <style>
+        body {
+            margin: 0 30px;
+        }
+
+        .bigger {
+            font-size: 3em;
+            font-family: cursive;
+        }
+        
+        .padded {
+            padding: 20px;
+        }
+        
+        .borderAdd {
+            border: 3px dotted blue;
+        }
+
+        .changePosition {
+        position: relative;
+        -webkit-animation: changeP 5s 2; 
+        -webkit-animation-direction: alternate; 
+        animation: changeP 5s 2;
+        animation-direction: alternate;
+        animation-iteration-count: infinite;
+        }
+
+        @-webkit-keyframes changeP {
+        0%   {left: 0px; top: 0px;}
+        25%  {left: 200px; top: 0px;}
+        50%  {left: 200px; top: 200px;}
+        75%  {left: 0px; top: 200px;}
+        100% {left: 0px; top: 0px;}
+        }
+
+        @keyframes changeP {
+        0%   {left: 0px; top: 0px;}
+        25%  {left: 200px; top: 0px;}
+        50%  {left: 200px; top: 200px;}
+        75%  {left: 0px; top: 200px;}
+        100% {left: 0px; top: 0px;}
+        }
+
+        .changeColor {
+        position: relative;
+        animation-name: example;
+        animation-duration: 4s;
+        animation-iteration-count: infinite;
+        }
+
+        @keyframes example {
+        0%   {background-color: red;}
+        25%  {background-color: yellow;}
+        50%  {background-color: blue;}
+        100% {background-color: green;}
+        }
+                
+        #main >* {
+            margin-top: 10px;
+            border: 0.3px solid #ddd;
+        }
+
+        #main {
+            padding: 10px;
+            border: 0.3px solid #ddd;
+        }
+
+        .mainLayout{
+            border: 0.3px solid #ddd; 
+        }
+
+        .mainLayout >* {
+            margin-top:10px;
+        }
+
+        .btn{
+            margin-bottom: 20px;
+            margin-left: 10px;
+            color: white;
+            background-color: cornflowerblue;
+            padding: 5px;
+            font-size: 1.1em;
+        }
+
+        .clearAll{
+            margin-right: 10px;
+            color: white;
+            background-color: orangered;
+            padding: 5px;
+            font-size: 1.1em;
+        }
+
+        .adder{
+            color: white;
+            background-color: rgb(96, 168, 96);
+            padding: 5px;
+            font-size: 1.1em;
+        }
+
+        .styling{
+           float: left;
+        }
+
+        .content{
+            float:left;
+        }
+
+    </style>
+</head>
+
+<body> 
+    <h1>Dom Elements Creator</h1>
+        <div class="mainLayout">Add Element:
+            <select name="addElement"></select>
+            <br>
+            <button class="adder" name="adder">New</button>
+            <br> Select Element
+            <select name="eleMaker"></select>
+            <br> Inner Text :
+            <input type="text" name="outputText" value="Laurence">
+            <br> Background :
+            <input type="color" name="bg" value="#ffffff">
+            <br> Text Color:
+            <input type="color" name="txt" value="#000000">
+            <br> Toggle Class:
+            <select name="classes"></select>
+            <br> Toggle Animate Class:
+            <select name="animate"></select>
+            <br>
+            <button class="clearAll">Clear All</button>
+            <button class="btn">Update</button>
+        </div>
+    <h2>Elements Created - Click Element to Remove</h2>
+    <div id="main">  
+        <div>Div</div>
+        <p>Paragraph</p> <span>Span</span>
+    </div>
+    <script>
+
+        /* Main Document Variables */
+
+        const classArray = ["none", "padded", "bigger", "borderAdd"];
+        const animateArray = ["none", "changeColor", "changePosition"];
+        const elementArray = ["div", "p", "span"];
+        const selClasses = document.querySelector("select[name=classes]");
+        const selAnimate = document.querySelector("select[name=animate]");
+        const eleMaker = document.querySelector("select[name=eleMaker]");
+        const addElement = document.querySelector("select[name=addElement]");
+        const adder = document.querySelector("button[name=adder]");
+        const selElement = document.querySelector("div");
+        const seInput = document.querySelector("input[name=outputText]");
+        const seBg = document.querySelector("input[name=bg]");
+        const seTxt = document.querySelector("input[name=txt]");
+        const btn = document.querySelector(".btn");
+        const main = document.querySelector("#main");
+        const clearAll = document.querySelector(".clearAll");
+        let nodeLister = document.querySelectorAll("#main >*");
+
+        /* Main Functions */
+
+        adder.addEventListener("click", function () {
+            let temp = document.createElement(addElement.value);
+            temp.textContent = addElement.value;
+            temp.addEventListener("click", removeEle);
+            main.appendChild(temp);
+            dropDownBuilder();
+        })
+        clearAll.addEventListener("click", function () {
+            nodeLister.forEach(function (item) {
+                item.remove();
+            });
+        })
+        btn.addEventListener("click", function (event) {
+            let tempElement = nodeLister[eleMaker.value];
+            tempElement.textContent = seInput.value;
+            tempElement.style.backgroundColor = seBg.value;
+            tempElement.style.color = seTxt.value;
+            tempElement.classList.toggle(selClasses.value);
+            tempElement.classList.toggle(selAnimate.value);
+        })
+        document.addEventListener("DOMContentLoaded", function () {
+            classArray.forEach(function (item) {
+                let opt = document.createElement("option");
+                opt.value = item;
+                opt.innerHTML = item;
+                selClasses.appendChild(opt);
+            })
+            animateArray.forEach(function (item) {
+                let opt = document.createElement("option");
+                opt.value = item;
+                opt.innerHTML = item;
+                selAnimate.appendChild(opt);
+            })
+            elementArray.forEach(function (item) {
+                let opt = document.createElement("option");
+                opt.value = item;
+                opt.innerHTML = item;
+                addElement.appendChild(opt);
+            })
+            removerElements();
+            dropDownBuilder();
+        })
+        function removerElements() {
+            nodeLister.forEach(function (item) {
+                item.addEventListener("click", removeEle);
+            })
+        }
+
+        function removeEle() {
+            main.removeChild(this);
+            dropDownBuilder();
+        }
+
+        function dropDownBuilder() {
+            eleMaker.innerHTML = "";
+            nodeLister = document.querySelectorAll("#main >*");
+            nodeLister.forEach(function (item, index) {
+                let opt = document.createElement("option");
+                opt.value = index;
+                opt.innerHTML = item.tagName;
+                eleMaker.appendChild(opt);
+            })
+        }
+    </script>
+</body>
+
+</html>
